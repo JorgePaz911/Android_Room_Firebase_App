@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">FullPractice</string>
+    <string name="welcome_text">Welcome!</string>
+    <string name="user_room_txt">Add User to Room</string>
+    <string name="view_room_users_txt">View Room Users</string>
+    <string name="name_txt">Name</string>
+    <string name="email_txt">Email</string>
+</resources>
