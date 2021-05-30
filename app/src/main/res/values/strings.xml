@@ -5,4 +5,8 @@
     <string name="view_room_users_txt">View Room Users</string>
     <string name="name_txt">Name</string>
     <string name="email_txt">Email</string>
+    <string name="name">Name</string>
+    <string name="email">E-Mail</string>
+    <string name="age">Age</string>
+    <string name="submit_btn">Submit</string>
 </resources>
