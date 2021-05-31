@@ -1,21 +1,33 @@
 package com.example.fullpractice;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.widget.Toast;
 
 import com.example.fullpractice.adapter.RecyclerRoomAdapter;
+import com.example.fullpractice.model.SharedViewModel;
 import com.example.fullpractice.model.User;
+import com.example.fullpractice.model.UserViewModel;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
-public class ViewRoomUsersActivity extends AppCompatActivity {
+public class ViewRoomUsersActivity extends AppCompatActivity implements RecyclerRoomAdapter.ItemClickListener {
 
-    private ArrayList<User> userList;
     private RecyclerView recyclerView;
+    private UserViewModel userViewModel;
+    private SharedViewModel sharedViewModel;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,23 +35,41 @@ public class ViewRoomUsersActivity extends AppCompatActivity {
         setContentView(R.layout.activity_view_room_users);
 
         recyclerView = findViewById(R.id.room_rec_view);
-        userList = new ArrayList<>();
 
-        setUserInfo();
-        setAdapter();
+        sharedViewModel = new ViewModelProvider(this)
+                .get(SharedViewModel.class);
+
+        userViewModel = new ViewModelProvider
+                .AndroidViewModelFactory(ViewRoomUsersActivity.this.getApplication())
+                .create(UserViewModel.class);
+
+        userViewModel.getAllUsers().observe(ViewRoomUsersActivity.this, new Observer<List<User>>() {
+            @Override
+            public void onChanged(List<User> users) {
+                users.sort(Comparator.comparing(User::getAge));
+                setAdapter(users);
+            }
+        });
     }
 
-    private void setAdapter() {
-        RecyclerRoomAdapter adapter = new RecyclerRoomAdapter(userList);
+    private void setAdapter(List<User> users) {
+        RecyclerRoomAdapter adapter = new RecyclerRoomAdapter(users, this);
         //RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(adapter);
     }
 
-    private void setUserInfo() {
-        userList.add(new User("Jorge", "j@j.com", 20));
-        userList.add(new User("Jorge2", "2j@j.com", 22));
-        userList.add(new User("Jorge3", "3j@j.com", 23));
+    @Override
+    public void onUserClick(User user) {
+        sharedViewModel.setSelectedUser(user);
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        Fragment fragment = fragmentManager.findFragmentById(R.id.frag_container);
+        if (fragment == null) {
+            fragment = new ViewUserDetailsFragment();
+            fragmentManager.beginTransaction()
+                    .add(R.id.frag_container, fragment)
+                    .commit();
+        }
     }
 }

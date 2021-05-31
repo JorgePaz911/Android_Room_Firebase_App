@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.example.fullpractice.model.User;
+import com.example.fullpractice.model.UserViewModel;
 import com.example.fullpractice.util.UserRoomDatabase;
 
 public class AddUserRoomActivity extends AppCompatActivity {
@@ -37,8 +38,7 @@ public class AddUserRoomActivity extends AppCompatActivity {
     }
 
     private void saveNewUser(User user) {
-        UserRoomDatabase db = UserRoomDatabase.getDatabase(this.getApplicationContext());
-        db.userDao().insert(user);
+        UserViewModel.insert(user);
         startActivity(new Intent(AddUserRoomActivity.this, MainActivity.class));
         finish();
     }
